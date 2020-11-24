@@ -2,8 +2,8 @@ import sys
 from copy import deepcopy
 import random
 
-knapsack = "mochila"
-nw = "secuencia"
+knapsack = "1"
+nw = "2"
 outputFileName = ""
 
 def main():
@@ -11,13 +11,12 @@ def main():
 
 def fileOperations():
     algo = determinateAlgo()
+    createOutputFile(fileName())
 
     if (algo == knapsack):
-        createOutputFile(knapsack)
-        createKnapsackExp(getArguments(10))
+        createKnapsackExp(getArguments(11))
     elif(algo == nw):
-        createOutputFile(nw)
-        createNWExp(getArguments(4))
+        createNWExp(getArguments(5))
     else:
         print("ID-PROBLEMA not recognized")
         sys.exit()
@@ -25,9 +24,12 @@ def fileOperations():
 def determinateAlgo():
     return sys.argv[1]
 
+def fileName():
+    return sys.argv[2]
+
 def getArguments(argvRange):
     arguments = []
-    for i in range (2,argvRange):
+    for i in range (3,argvRange):
         try:
             arguments.append(int(sys.argv[i]))
         except:
@@ -37,8 +39,12 @@ def getArguments(argvRange):
 
 def createOutputFile(fileName):
     global outputFileName
-    outputFileName = fileName + "_experiment.txt"
-    open(outputFileName, 'w+')
+    try:
+        outputFileName = fileName + ".txt"
+        open(outputFileName, 'w+')
+    except:
+        print("There is an error with the fileName argument")
+        sys.exit()
 
 
 def createKnapsackExp(argv):
