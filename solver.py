@@ -8,6 +8,10 @@ fileName = ""
 algo = 0
 method = 0
 
+# Parameters: None
+# Returns: None
+# Description: The main structure for the program because begins and ends the different methods to solve the problems
+
 def main():
     listOfLists = fileOperations()
     if(algo == 1):
@@ -17,6 +21,10 @@ def main():
         prepareSequence(listOfLists)
     else:
         print("Algorithm not recognized")
+
+# Parameters: Matrix
+# Returns: None
+# Description: Determinates the method to be used (BT, DP) for the Sequence algorithm, runs the functions and displays the results
 
 def prepareSequence(listOfLists):
     global method
@@ -67,6 +75,10 @@ def prepareSequence(listOfLists):
         print("Method not recognized")
 
 
+# Parameters: String, String, int, int, int
+# Returns: List
+# Description: By backtracking resolves the sequence alignment problem and returns the best finding
+
 def sequenceBT(h1, h2, match, mismatch, gapPenalty):
     h1Len = len(h1)
     h2Len = len(h2)
@@ -95,6 +107,10 @@ def sequenceBT(h1, h2, match, mismatch, gapPenalty):
 
     return current
 
+# Parameters: String, String, int, int, int
+# Returns: int
+# Description: Gives a score between two sequences
+
 def goodnessScore(h1, h2, match, mismatch, gapPenalty):
     score = 0
     GAP = "_"
@@ -108,6 +124,9 @@ def goodnessScore(h1, h2, match, mismatch, gapPenalty):
 
     return score
 
+# Parameters: int, string (sequence)
+# Returns: Matrix
+# Description: Generates N quantity of cases where a GAP can be placed into a string
 
 def generateStrings(k, string):
 
@@ -131,9 +150,9 @@ def generateStrings(k, string):
     
     return cases
 
-def insertChar(mystring, position, chartoinsert ):
-    mystring   =  mystring[:position] + chartoinsert + mystring[position:] 
-    return mystring  
+# Parameters: matrix, string (sequence), string (sequence), int, int
+# Returns: list
+# Description: Given a Needleman–Wunsch matrix determinates the strings of the first and second sequence
 
 def determinateSequence(matrix, h1, h2, h1Len, h2Len):
     h1List = []
@@ -173,6 +192,9 @@ def determinateSequence(matrix, h1, h2, h1Len, h2Len):
 
     return [''.join(h1List), ''.join(h2List)]
 
+# Parameters: String, String, int, int, int
+# Returns: List
+# Description: By dynamic programming resolves the sequence alignment problem and returns the best finding
 
 def sequenceDP(h1, h2, match, mismatch, gapPenalty):
     h1Len = len(h1)
@@ -189,7 +211,7 @@ def sequenceDP(h1, h2, match, mismatch, gapPenalty):
 
     for i in range(1, h1Len + 1):
         for j in range (1, h2Len + 1):
-            leaveIt = maxAlign[j - 1][i - 1][0] + f(h1, h2, i, j, match, mismatch)
+            leaveIt = maxAlign[j - 1][i - 1][0] + f(h1, h2, i, j)
             addGapH1 = maxAlign[j - 1][i][0] + gapPenalty
             addGapH2 = maxAlign[j][i - 1][0] + gapPenalty
 
@@ -207,12 +229,19 @@ def sequenceDP(h1, h2, match, mismatch, gapPenalty):
 
     return maxAlign
 
+# Parameters: String, String, int, int
+# Returns: int
+# Description: Determinates if given two indexes there is a match between two chars inside the strings
 
-def f(h1, h2, i, j, match, mismatch):
+def f(h1, h2, i, j):
     if (h1[i - 1] == h2[j - 1]):
         return 1 # aqui deberia el match value
     return -1
-        
+
+# Parameters: Matrix
+# Returns: None
+# Description: Determinates the method to be used (BT, DP) for the Sequence algorithm, runs the functions and displays the results
+
 def prepareKnapSack(matrix):
     global method
     val = [matrix[i][1] for i in range(1, len(matrix)) for x in range(matrix[i][2])]
@@ -253,6 +282,9 @@ def prepareKnapSack(matrix):
     else:
         print("Method not recognized")
 
+# Parameters: matrix, list
+# Returns: None
+# Description: Displays on console the elements discovered by the BT and DP algorithm of KnapSack
 
 def printElements(matrix, elemts):
     groupElements = [ (i, matrix[i][2]) for i in range(1, len(matrix))]
@@ -271,6 +303,9 @@ def printElements(matrix, elemts):
             continue
         print(str(i + 1) + ", " + str(presentElements[i]))
 
+# Parameters: list, list, int, int, list
+# Returns: int
+# Description: By backtracking resolves the KnapSack problem and returns the best value in the sack
 
 def knapSackBT(val, wt, n, W, items):
     if (W < 0):
@@ -294,6 +329,31 @@ def knapSackBT(val, wt, n, W, items):
         return exclude
 
 
+# Parameters: list, list, int, int
+# Returns: matrix
+# Description: By dynamic programming resolves the KnapSack problem and returns the matrix generated
+
+def knapSackDP(W, wt, val, n): 
+    V = []
+
+    for i in range(n + 1):
+        V.append([0] * (W + 1))
+
+    for i in range(1, n + 1): 
+        for w in range(W + 1): 
+            if (wt[i - 1] > w):
+                V[i][w] = V[i - 1][w]
+            elif (val[i - 1] + V[i - 1][w - wt[i - 1]] > V[i - 1][w]):
+                V[i][w] = val[i - 1] + V[i - 1][w - wt[i - 1]]
+            else: 
+                V[i][w] = V[i - 1][w]
+
+    return V
+
+# Parameters: list, list, int, int
+# Returns: list
+# Description: Given the parameters discovers the elements used to get the best result in the KnapSack problem resolved with DP
+
 def findElements(V, W, n, wt):
     k = W
     elemts = []
@@ -306,6 +366,10 @@ def findElements(V, W, n, wt):
             i -= 1
     return elemts
 
+# Parameters: None
+# Returns: A matrix containing all the values read from the file sent as an argument
+# Description: Verifies the status of the program when is called, manages the arguments necessary for each problem and determinates 
+#              if the -h argument was sent
 
 def fileOperations():
     global fileName, method, algo
@@ -335,6 +399,9 @@ def fileOperations():
         print("There is a problem with the arguments")
         sys.exit()
 
+# Parameters: None
+# Returns: A matrix containing all the values read from the file sent as an argument
+# Description: Splits the content of the file sent as an argument based on the commas
 
 def readFile():
     lines = open(fileName, 'r').readlines()
@@ -345,16 +412,32 @@ def readFile():
         listOfLists.append(splittedLine)
     return listOfLists
 
+# Parameters: None
+# Returns: unknown value
+# Description: Gets the first element sent by argument to the program
+
 def getFirstArgu():
     return sys.argv[1]
+
+# Parameters: None
+# Returns: None
+# Description: Prints on console the information to execute the program including the arguments
 
 def showHelp():
     print("Hello")
 
+
+# Parameters: String
+# Returns: String
+# Description: Removes from a string the end line char
 def removeEndLine(line):
     if(line.endswith("\n")):
         return line.replace("\n", "")
     return line
+
+# Parameters: Matrix
+# Returns: Matrix
+# Description: Removes the signs from the matrix and converts all the values into ints/floats
 
 def formatMatrix(matrix):
     for row in range(len(matrix)):
@@ -363,27 +446,15 @@ def formatMatrix(matrix):
             
     return matrix
 
+
+# Parameters: s - string that may be an float or int
+# Returns: int or float
+# Description: converts a string into float or int
+
 def num(s):
     try:
         return int(s)
     except ValueError:
         return float(s)
-
-def knapSackDP(W, wt, val, n): 
-    V = []
-
-    for i in range(n + 1):
-        V.append([0] * (W + 1))
-
-    for i in range(1, n + 1): 
-        for w in range(W + 1): 
-            if (wt[i - 1] > w):
-                V[i][w] = V[i - 1][w]
-            elif (val[i - 1] + V[i - 1][w - wt[i - 1]] > V[i - 1][w]):
-                V[i][w] = val[i - 1] + V[i - 1][w - wt[i - 1]]
-            else: 
-                V[i][w] = V[i - 1][w]
-  
-    return V
 
 main()
