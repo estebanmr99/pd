@@ -2,6 +2,7 @@ import sys
 from copy import deepcopy
 import time
 import numpy as np
+import itertools
 
 fileName = ""
 algo = 0
@@ -32,8 +33,15 @@ def prepareSequence(listOfLists):
         print("Sequence alignment with backtracking")
 
         start_time = time.time()
-        end_time =  time.time() - start_time
+        result = sequenceBT(h1, h2, match, mismatch , gapPenalty)
+        
+        print("Final score: " + str(result[0]))
 
+        print("Hilera1: " + str(result[1]))
+
+        print("Hilera2: " + str(result[2]))
+
+        end_time =  time.time() - start_time
         print("Time execution: " + str(end_time))
     elif(method == 2):
         #DP case
@@ -57,6 +65,75 @@ def prepareSequence(listOfLists):
         print("Time execution: " + str(end_time))
     else:
         print("Method not recognized")
+
+
+def sequenceBT(h1, h2, match, mismatch, gapPenalty):
+    h1Len = len(h1)
+    h2Len = len(h2)
+    k = 0
+
+    if (h1Len >= h2Len):
+        k = h1Len * 2
+    else:
+        k = h2Len * 2
+
+    test1 = generateStrings(k, h1)
+
+    test2 = generateStrings(k, h2)
+
+    current = [-999,"",""]
+
+    for i in range(len(test1)):
+        currentLen = len(test1[i])
+        for j in range(currentLen):
+            currentLen2 = len(test1[i])
+            for k in range(currentLen2):
+                score = goodnessScore(test1[i][j], test2[i][k], match, mismatch, gapPenalty)
+                if (current[0] < score):
+                    current = [score, test1[i][j], test2[i][k]]
+
+
+    return current
+
+def goodnessScore(h1, h2, match, mismatch, gapPenalty):
+    score = 0
+    GAP = "_"
+    for i in range(len(h1)):
+        if (h1[i] == h2[i] and (h1 != GAP and h2[i] != GAP)):
+            score += match
+        elif (h1[i] == GAP or h2[i] == GAP):
+            score += gapPenalty
+        else:
+            score += mismatch
+
+    return score
+
+
+def generateStrings(k, string):
+
+    cases = [[string]]
+    
+    stringRange =  k - len(string)
+
+    for i in range(stringRange):
+        current = []
+        someLen = len(cases[i])
+        for j in range(someLen):
+            currentLen = len(cases[i][j])
+            for k in range((currentLen + 1)):
+                modifiedString = cases[i][j][:k] + "_" + cases[i][j][k:]
+                if (len(current) == 0):
+                    current.append(modifiedString)
+                elif(len(current) != 0 and current[-1] != modifiedString):
+                    current.append(modifiedString)
+
+        cases.append(current)
+    
+    return cases
+
+def insertChar(mystring, position, chartoinsert ):
+    mystring   =  mystring[:position] + chartoinsert + mystring[position:] 
+    return mystring  
 
 def determinateSequence(matrix, h1, h2, h1Len, h2Len):
     h1List = []
