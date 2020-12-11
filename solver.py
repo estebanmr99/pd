@@ -36,6 +36,7 @@ def fileOperations():
             argu = getFirstArgu()
             if (argu == "-h"):
                 showHelp()
+                print("\n")
                 algo = int(sys.argv[2])
                 method = int(sys.argv[3])
                 fileName = sys.argv[4]
@@ -49,9 +50,13 @@ def fileOperations():
             method = int(sys.argv[2])
             fileName = sys.argv[3]
             return readFile()
-        else:
+        elif(lenArgv == 2):
+            showHelp()
             sys.exit()
-    except:
+        else:
+            print("There is a problem with the arguments")
+            sys.exit()
+    except Exception:
         print("There is a problem with the arguments")
         sys.exit()
 
@@ -80,7 +85,16 @@ def getFirstArgu():
 # Description: Prints on console the information to execute the program including the arguments
 
 def showHelp():
-    print("Hello")
+    print("Para este programa se pueden resolver 2 problemas de 2 formas, los problemas son:")
+    print("     1. Mochila/Contenedores -> Se puede resolver con Fuerza bruta o programación dinámica.")
+    print("     2. Alineamiento global de secuencias -> Se puede resolver con Fuerza bruta o programación dinámica.\n")
+    print("El número de argumentos son de 3 obligatorios, uno opcional y son:")
+    print("     python solver.py [-h] PROBLEMA ALGORITMO ARCHIVO\n")
+    print("Los argumentos representan:")
+    print("     [-h] Argumento opcional que muestra la guía básica del programa.")
+    print("     PROBLEMA valor de 1 o 2, indicando el problema a resolver, 1 contenedor, 2 alineamiento.")
+    print("     ALGORITMO valor de 1 o 2, indicando el algoritmo a usar, 1 fuerza bruta, 2 programación dinámica")
+    print("     ARCHIVO indica el archivo de entrada donde el programa toma los parámetros del problema y procede a resolverlo con el algoritmo especificado.")
 
 
 # Parameters: String
@@ -266,9 +280,9 @@ def prepareSequence(listOfLists):
         
         print("Final score: " + str(result[0]))
 
-        print("Hilera1: " + str(result[1]))
+        print("Hilera 1: " + str(result[1]))
 
-        print("Hilera2: " + str(result[2]))
+        print("Hilera 2: " + str(result[2]))
 
         end_time =  time.time() - start_time
         print("Time execution: " + str(end_time))
@@ -283,13 +297,13 @@ def prepareSequence(listOfLists):
         for row in result:
             print(' '.join(map(str,row)))
 
-        print("Final score: " + str(result[h1Len][h2Len][0]))
+        print("Final score: " + str(result[h2Len][h1Len][0]))
 
         values = determinateSequence(result, h1, h2, h1Len, h2Len)
 
-        print("Hilera1: " + str(values[0]))
+        print("Hilera 1: " + str(values[0]))
 
-        print("Hilera2: " + str(values[1]))
+        print("Hilera 2: " + str(values[1]))
 
         print("Time execution: " + str(end_time))
     else:
@@ -316,15 +330,31 @@ def sequenceBT(h1, h2, match, mismatch, gapPenalty):
 
     current = [-999,"",""]
 
-    for i in range(len(h1Elements)):
-        currentLen = len(h1Elements[i])
-        for j in range(currentLen):
-            currentLen2 = len(h1Elements[i])
-            for k in range(currentLen2):
-                score = goodnessScore(h1Elements[i][j], h2Elements[i][k], match, mismatch, gapPenalty)
-                if (current[0] < score):
-                    current = [score, h1Elements[i][j], h2Elements[i][k]]
+    differenceH1 = k - h1Len
+    differenceH2 = k - h2Len
 
+    finalDifferenceH1, finalDifferenceH2 = 0, 0
+
+    orderHK = h1Elements
+    orderHN = h1Elements
+
+    if (h1Len > h2Len):
+        orderHN = h2Elements
+        finalDifferenceH2 = differenceH2 - differenceH1
+
+    elif (h1Len < h2Len):
+        orderHN = h1Elements
+        orderHK = h2Elements
+        finalDifferenceH1 = differenceH1 - differenceH2
+
+    for i in range(len(orderHK)):
+        currentLen = len(orderHK[i])
+        for j in range(currentLen):
+            currentLen2 = len(orderHN[i])
+            for k in range(currentLen2):
+                score = goodnessScore(h1Elements[i + finalDifferenceH1][j], h2Elements[i + finalDifferenceH2][k], match, mismatch, gapPenalty)
+                if (current[0] < score):
+                    current = [score, h1Elements[i + finalDifferenceH1][j], h2Elements[i + finalDifferenceH2][k]]
 
     return current
 
@@ -368,7 +398,6 @@ def goodnessScore(h1, h2, match, mismatch, gapPenalty):
             score += gapPenalty
         else:
             score += mismatch
-
     return score
 
 # Parameters: String, String, int, int, int
@@ -380,10 +409,10 @@ def sequenceDP(h1, h2, match, mismatch, gapPenalty):
     h2Len = len(h2)
     matrix = [[0 for x in range(h1Len + 1)] for y in range(h2Len + 1)]
 
-    for i in range(h1Len + 1):
+    for i in range(h2Len + 1):
         matrix[i][0] = (-2 * i,  [0, 1, 0]) 
     
-    for j in range(h2Len + 1):
+    for j in range(h1Len + 1):
         matrix[0][j] = (-2 * j,  [0, 0, 1])
 
     matrix[0][0][1][2] = 0
@@ -427,7 +456,9 @@ def determinateSequence(matrix, h1, h2, h1Len, h2Len):
 
     condition =  True
 
-    i, j, currentI, currentJ = h1Len, h2Len, h1Len, h2Len
+    i, j = h2Len, h1Len
+    
+    currentI, currentJ = h1Len, h2Len
 
     count = 0
 
