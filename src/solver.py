@@ -199,7 +199,7 @@ def knapSackBT(val, wt, n, W, items):
         items.extend(originalItems)
         return exclude
 
-# Parameters: list, list, int, int
+# Parameters: int, list, list, int
 # Returns: matrix
 # Description: By dynamic programming resolves the KnapSack problem and returns the matrix generated
 
